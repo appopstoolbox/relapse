@@ -27,6 +27,10 @@ public final class CLI {
         {
             throw "Invalide argument"
         }
+        
+        if limitKey.isEmpty {
+            throw "LimitKey should not be empty"
+        }
 
         self.limitKey = limitKey
         self.limitValue = limitValue

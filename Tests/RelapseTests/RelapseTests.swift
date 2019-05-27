@@ -1,11 +1,37 @@
 import XCTest
+import SnapshotTesting
+import Foundation
+
 import class Foundation.Bundle
+
+
+extension String {
+    func removeCharacters(match : String, with : String) -> String {
+        if let hexaRange = self.range(of: match, options: .regularExpression) {
+            return self.replacingCharacters(in: hexaRange, with: with)
+        }
+        return self
+    }
+}
+
+extension Snapshotting where Value == String, Format == String {
+    /// A snapshot strategy for comparing nserror based on equality
+    /// This strategy remove pointer informations from NSError in order to make them retestable
+    public static let nserror: Snapshotting = Snapshotting<String, String>.lines.pullback { err -> String in
+        if let hexaRange = err.range(of: ###"(0x[\w]{9})"###, options: .regularExpression) {
+            return err.replacingCharacters(in: hexaRange, with: "<pointer_info>")
+        }
+        return err
+    }
+}
 
 final class RelapseTests: XCTestCase {
     
-    func performTest(_ args : [String], _ expectedOutput : String) throws {
-        guard #available(macOS 10.13, *) else { return }
-
+    
+    override func setUp() {
+//        record = true
+    }
+    func performTest(_ args : [String]) throws -> String {
         let fooBinary = productsDirectory.appendingPathComponent("Relapse")
         
         let process = Process()
@@ -21,63 +47,108 @@ final class RelapseTests: XCTestCase {
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         let output = String(data: data, encoding: .utf8)
         
-        XCTAssertEqual(output, expectedOutput)
+        return output ?? "<vide>"
     }
     
     
     //// BadNumberOfArgument
     
     func test_01_BadNumberOfArgument1() throws {
-        try performTest([], "Bad number of argument\n")
+        let output = try performTest([])
+        assertSnapshot(matching: output, as: .lines)
     }
 
     func test_02_BadNumberOfArgument2() throws {
-        try performTest(["test_relapse_superior_to"], "Bad number of argument\n")
+        let output = try performTest(["test_relapse_superior_to"])
+        assertSnapshot(matching: output, as: .lines)
     }
 
     func test_03_BadNumberOfArgument3() throws {
-        try performTest(["test_relapse_superior_to", "1"], "Bad number of argument\n")
+        let output = try performTest(["test_relapse_superior_to", "1"])
+        assertSnapshot(matching: output, as: .lines)
     }
 
     func test_04_BadNumberOfArgument4() throws {
-        try performTest(["test_relapse_superior_to", "1", ">"], "Bad number of argument\n")
+        let output = try performTest(["test_relapse_superior_to", "1", ">"])
+        assertSnapshot(matching: output, as: .lines)
     }
     
     //// SuperiorTo
 
     func test_05_AddSuperiorTo() throws {
-        try performTest(["test_relapse_superior_to", "1", ">", ".test/ci/ci.sqlite3"], "😆 - We have added this new value.\n")
+        let output = try performTest(["test_relapse_superior_to", "1", ">", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
     }
 
     func test_06_NoUpdateSuperiorTo() throws {
-        try performTest(["test_relapse_superior_to", "1", ">", ".test/ci/ci.sqlite3"], "😐 - The new value(1) is equal to the stored value.\n")
+        let output = try performTest(["test_relapse_superior_to", "1", ">", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
     }
     
     func test_07_UpdateSuperiorTo() throws {
-        try performTest(["test_relapse_superior_to", "5", ">", ".test/ci/ci.sqlite3"], "😆 - We have update the saved value to 5.\n")
+        let output = try performTest(["test_relapse_superior_to", "5", ">", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
     }
     
     func test_08_FailSuperiorTo() throws {
-        try performTest(["test_relapse_superior_to", "3", ">", ".test/ci/ci.sqlite3"], "😫 - The test of \"3 > 5\" failed.\n")
+        let output = try performTest(["test_relapse_superior_to", "3", ">", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
     }
 
     //// InferiorTo
     
     func test_09_AddInferiorTo() throws {
-        try performTest(["test_relapse_inferior_to", "25", "<", ".test/ci/ci.sqlite3"], "😆 - We have added this new value.\n")
+        let output = try performTest(["test_relapse_inferior_to", "25", "<", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
+
     }
     
     func test_10_NoUpdateInferiorTo() throws {
-        try performTest(["test_relapse_inferior_to", "25", "<", ".test/ci/ci.sqlite3"], "😐 - The new value(25) is equal to the stored value.\n")
+        let output = try performTest(["test_relapse_inferior_to", "25", "<", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
+
     }
     
     func test_11_UpdateInferiorTo() throws {
-        try performTest(["test_relapse_inferior_to", "2", "<", ".test/ci/ci.sqlite3"], "😆 - We have update the saved value to 2.\n")
+        let output = try performTest(["test_relapse_inferior_to", "2", "<", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
+
     }
     
     func test_12_FailInferiorTo() throws {
-        try performTest(["test_relapse_inferior_to", "23", "<", ".test/ci/ci.sqlite3"], "😫 - The test of \"23 < 2\" failed.\n")
+        let output = try performTest(["test_relapse_inferior_to", "23", "<", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
     }
+    
+    
+    /// Bizarro
+    
+    func test_13_BadPath() throws {
+        let output = try performTest(["test_bad_path", "1", ">", "/etc/var/toto/ci.ci.sqlite3"])
+        assertSnapshot(matching: output, as: .nserror)
+    }
+
+    func test_14_BadSign() throws {
+        let output = try performTest(["test_bad_sign", "1", "-", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
+    }
+
+    func test_15_BadNumber() throws {
+        let output = try performTest(["test_bad_number", "aa", ">", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
+    }
+
+    func test_16_BadNumber() throws {
+        let output = try performTest(["test_bad_number", "1.3", ">", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
+    }
+
+    func test_17_Bad_LimiterKey() throws {
+        let output = try performTest(["", "1", ">", ".test/ci/ci.sqlite3"])
+        assertSnapshot(matching: output, as: .lines)
+    }
+    
+
 
     /// Returns path to the built products directory.
     var productsDirectory: URL {
@@ -104,5 +175,10 @@ final class RelapseTests: XCTestCase {
         ("test_10_NoUpdateInferiorTo", test_10_NoUpdateInferiorTo),
         ("test_11_UpdateInferiorTo", test_11_UpdateInferiorTo),
         ("test_12_FailInferiorTo", test_12_FailInferiorTo),
+        ("test_13_BadPath", test_13_BadPath),
+        ("test_14_BadSign", test_14_BadSign),
+        ("test_15_BadNumber", test_15_BadNumber),
+        ("test_16_BadNumber", test_16_BadNumber),
+        ("test_17_Bad_LimiterKey", test_17_Bad_LimiterKey),
     ]
 }

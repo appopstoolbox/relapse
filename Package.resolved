@@ -15,8 +15,17 @@
         "repositoryURL": "https://github.com/groue/GRDB.swift.git",
         "state": {
           "branch": null,
-          "revision": "d7d3f879218ca0d2ed237118569bf4822d9f0908",
-          "version": "4.0.0"
+          "revision": "49a7b2091c84e8e695e78ada1840eda022e5dc11",
+          "version": "4.0.1"
+        }
+      },
+      {
+        "package": "SnapshotTesting",
+        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing.git",
+        "state": {
+          "branch": null,
+          "revision": "883f0b0623ae55f41f42e2399dab428017896448",
+          "version": "1.5.0"
         }
       }
     ]

@@ -1,0 +1,1 @@
+😐 - The new value(25) is equal to the stored value.
