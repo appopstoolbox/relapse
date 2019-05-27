@@ -24,25 +24,38 @@ final class RelapseTests: XCTestCase {
         XCTAssertEqual(output, expectedOutput)
     }
     
-    func testExample() throws {
-        
-        let arguments = [
-            ([], "Bad number of argument\n"),
-            (["warning_relapse"], "Bad number of argument\n"),
-            (["warning_relapse", "1"], "Bad number of argument\n"),
-            (["warning_relapse", "1", ">"], "Bad number of argument\n"),
-            (["warning_relapse", "1", ">", ".test/ci/ci.sqlite3"], "😆 - We have update the saved value to 1.\n"),
-            (["warning_relapse", "1", ">", ".test/ci/ci.sqlite3"], "😐 - The new value(1) is equal to the stored value.\n"),
-            (["warning_relapse", "5", ">", ".test/ci/ci.sqlite3"], "😆 - We have update the saved value to 5.\n"),
-            (["warning_relapse", "1", ">", ".test/ci/ci.sqlite3"], "😫 - The test of \"1 > 5\" failed.\n"),
-        ]
-        
-        for (args, expectedOutput) in arguments {
-            print("Performing \(args) expect \(expectedOutput)")
-            try performTest(args, expectedOutput)
-        }
+    func testBasNumberOfArgument1() throws {
+        try performTest([], "Bad number of argument\n")
     }
 
+    func testBasNumberOfArgument2() throws {
+        try performTest(["warning_relapse"], "Bad number of argument\n")
+    }
+
+    func testBasNumberOfArgument3() throws {
+        try performTest(["warning_relapse", "1"], "Bad number of argument\n")
+    }
+
+    func testBasNumberOfArgument4() throws {
+        try performTest(["warning_relapse", "1", ">"], "Bad number of argument\n")
+    }
+
+    func testBasNumberOfArgument5() throws {
+        try performTest(["warning_relapse", "1", ">", ".test/ci/ci.sqlite3"], "😆 - We have added this new value.\n")
+    }
+
+    func testBasNumberOfArgument6() throws {
+        try performTest(["warning_relapse", "1", ">", ".test/ci/ci.sqlite3"], "😐 - The new value(1) is equal to the stored value.\n")
+    }
+    
+    func testBasNumberOfArgument7() throws {
+        try performTest(["warning_relapse", "5", ">", ".test/ci/ci.sqlite3"], "😆 - We have update the saved value to 5.\n")
+    }
+    
+    func testBasNumberOfArgument8() throws {
+        try performTest(["warning_relapse", "1", ">", ".test/ci/ci.sqlite3"], "😫 - The test of \"1 > 5\" failed.\n")
+    }
+    
     /// Returns path to the built products directory.
     var productsDirectory: URL {
       #if os(macOS)
@@ -56,6 +69,13 @@ final class RelapseTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testBasNumberOfArgument1", testBasNumberOfArgument1),
+        ("testBasNumberOfArgument2", testBasNumberOfArgument2),
+        ("testBasNumberOfArgument3", testBasNumberOfArgument3),
+        ("testBasNumberOfArgument4", testBasNumberOfArgument4),
+        ("testBasNumberOfArgument5", testBasNumberOfArgument5),
+        ("testBasNumberOfArgument6", testBasNumberOfArgument6),
+        ("testBasNumberOfArgument7", testBasNumberOfArgument7),
+        ("testBasNumberOfArgument8", testBasNumberOfArgument8),
     ]
 }

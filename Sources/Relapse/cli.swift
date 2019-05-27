@@ -50,8 +50,8 @@ public final class CLI {
         let isTableCreate = try rp.isLimitKeyPresent(limitKey)
         if isTableCreate == false {
             try rp.add(limitKey: limitKey, limitValue: limitValue)
+        } else {
+            try rp.shouldWeUpdateOrRejectValue(limitKey: limitKey, limitValue: limitValue, sign: sign)
         }
-        
-        try rp.shouldWeUpdateOrRejectValue(limitKey: limitKey, limitValue: limitValue, sign: sign)
     }
 }

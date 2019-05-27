@@ -1,11 +1,19 @@
 import Foundation
 import GRDB
+import os.log
 
 extension String : Error {}
 
 public struct RelapseCore {
     
     var database : DatabasePool
+    public static let log : OSLog = {
+        let bundleIdentifier  = Bundle.main.bundleIdentifier ?? "com.appopstoolbox"
+        let subsystem = "\(bundleIdentifier)"
+        let category = "Relapse"
+        return OSLog(subsystem: subsystem, category: category)
+    }()
+
 
     public enum Sign : String, RawRepresentable {
         case inferiorTo = "<"
@@ -16,6 +24,7 @@ public struct RelapseCore {
         
         do {
             database = try DatabasePool(path: databasePath)
+            os_log("💾 %s", log: RelapseCore.log, type: .debug, database.path)
         } catch {
             print(error)
             return nil
@@ -66,6 +75,7 @@ public struct RelapseCore {
                 sql: "INSERT INTO `limits` (`limitKey`,`limitValue`, `update`) VALUES (:limitKey ,:limitValue, :update)",
                 arguments:["limitKey": key, "limitValue": value, "update" : Date()]
             )
+            print("😆 - We have added this new value.")
         }
     }
     
