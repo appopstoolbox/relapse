@@ -63,7 +63,7 @@ public struct RelapseCore {
         
         try database.write { db in
             try db.execute(
-                sql: "INSERT INTO `limits` (`limit_key`,`limitValue`, `update`) VALUES (:limit_key ,:limitValue, :update)",
+                sql: "INSERT INTO `limits` (`limitKey`,`limitValue`, `update`) VALUES (:limitKey ,:limitValue, :update)",
                 arguments:["limitKey": key, "limitValue": value, "update" : Date()]
             )
         }
@@ -104,7 +104,7 @@ public struct RelapseCore {
         case (0, 1):
             print("😐 - The new value(\(value)) is equal to the stored value.")
         case (1, 0), (1, 1):
-            throw "😫 - The test of \"\(value) \(sign.rawValue) \(limitValue)\" failed"
+            throw "😫 - The test of \"\(value) \(sign.rawValue) \(limitValue)\" failed."
         default:
             throw "Impossible 🧐"
         }
