@@ -26,11 +26,7 @@ extension Snapshotting where Value == String, Format == String {
 }
 
 final class RelapseTests: XCTestCase {
-    
-    
-    override func setUp() {
-//        record = true
-    }
+        
     func performTest(_ args : [String]) throws -> String {
         let fooBinary = productsDirectory.appendingPathComponent("Relapse")
         
