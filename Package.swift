@@ -11,8 +11,8 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.5.0"),
     ],
     targets: [
-        .target(name: "Relapse", dependencies: ["RelapseCore"]),
+        .target(name: "relapse", dependencies: ["RelapseCore"]),
         .target(name: "RelapseCore", dependencies: ["GRDB"]),
-        .testTarget(name: "RelapseTests",dependencies: ["Relapse", "SnapshotTesting"]),
+        .testTarget(name: "RelapseTests",dependencies: ["relapse", "SnapshotTesting"]),
     ]
 )

@@ -26,7 +26,7 @@ extension Snapshotting where Value == String, Format == String {
 }
 
 final class RelapseTests: XCTestCase {
-        
+    
     func performTest(_ args : [String]) throws -> String {
         let fooBinary = productsDirectory.appendingPathComponent("Relapse")
         
@@ -46,7 +46,14 @@ final class RelapseTests: XCTestCase {
         return output ?? "<vide>"
     }
     
-    
+    func test_00_clean_init() throws {
+        do {
+            try FileManager.default.removeItem(atPath: ".test/ci")
+        } catch {
+            print(error)
+        }
+    }
+
     //// BadNumberOfArgument
     
     func test_01_BadNumberOfArgument1() throws {
@@ -159,6 +166,7 @@ final class RelapseTests: XCTestCase {
     }
 
     static var allTests = [
+        ("test_00_clean_init", test_00_clean_init),
         ("test_01_BadNumberOfArgument1", test_01_BadNumberOfArgument1),
         ("test_02_BadNumberOfArgument2", test_02_BadNumberOfArgument2),
         ("test_03_BadNumberOfArgument3", test_03_BadNumberOfArgument3),
