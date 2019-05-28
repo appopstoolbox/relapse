@@ -127,7 +127,7 @@ final class RelapseTests: XCTestCase {
     /// Bizarro
     
     func test_13_BadPath() throws {
-        let output = try performTest(["test_bad_path", "1", ">", "/etc/var/toto/ci.ci.sqlite3"])
+        let output = try performTest(["test_bad_path", "1", ">", "/etc/foo/bar/toto/ci.ci.sqlite3"])
         assertSnapshot(matching: output, as: .nserror)
     }
 
