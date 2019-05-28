@@ -5,6 +5,6 @@ do {
     try tool.run()
 } catch {
     print(error)
-    exit(0)
+    exit(1)
 }
-exit(1)
+exit(0)
