@@ -4,7 +4,7 @@ do {
     let tool = try CLI()
     try tool.run()
 } catch {
-    print(error)
-    exit(1)
+    print("Error: \(error)")
+    exit(EXIT_FAILURE)
 }
-exit(0)
+exit(EXIT_SUCCESS)
